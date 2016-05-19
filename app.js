@@ -37,11 +37,16 @@ app.use(session({
   secret: settings.cookieSecret,
   key: settings.db,//cookie name
   cookie: {maxAge: 1000 * 60 * 60 * 24 * 30},//30 days
-  store: new MongoStore({
-    db: settings.db,
-    host: settings.host,
-    port: settings.port
-  })
+//  store: new MongoStore({
+//    db: settings.db,
+//    host: settings.host,
+//    port: settings.port
+//  })
+  store: new MongoStore({ //上面的store修正成下面的，還有增加兩個敘述
+      url: 'mongodb://localhost/blog'
+  }),
+  resave: true,
+  saveUninitialized: true
 }));
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
