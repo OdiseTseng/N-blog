@@ -9,24 +9,24 @@ function Comment(name, day, title, comment) {
 
 module.exports = Comment;
 
-//存储一条留言信息
+//儲存一條留言信息
 Comment.prototype.save = function(callback) {
   var name = this.name,
       day = this.day,
       title = this.title,
       comment = this.comment;
-  //打开数据库
+  //打開資料庫
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //通过用户名、时间及标题查找文档，并把一条留言对象添加到该文档的 comments 数组里
+      //透過用戶名、時間及標題尋找檔案，並把一條留言對象添加到該檔案的 comments 數組裡
       collection.update({
         "name": name,
         "time.day": day,

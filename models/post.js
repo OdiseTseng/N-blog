@@ -11,10 +11,10 @@ function Post(name, head, title, tags, post) {
 
 module.exports = Post;
 
-//存储一篇文章及其相关信息
+//儲存一篇文章及其相關信息
 Post.prototype.save = function(callback) {
   var date = new Date();
-  //存储各种时间格式，方便以后扩展
+  //存儲各種時間格式，方便以後擴展
   var time = {
       date: date,
       year : date.getFullYear(),
@@ -23,7 +23,7 @@ Post.prototype.save = function(callback) {
       minute : date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + " " + 
       date.getHours() + ":" + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())
   }
-  //要存入数据库的文档
+  //要存入資料庫的檔案
   var post = {
       name: this.name,
       head: this.head,
@@ -35,39 +35,39 @@ Post.prototype.save = function(callback) {
       reprint_info: {},
       pv: 0
   };
-  //打开数据库
+  //打開資料庫
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //将文档插入 posts 集合
+      //将檔案插入 posts 集合
       collection.insert(post, {
         safe: true
       }, function (err) {
         mongodb.close();
         if (err) {
-          return callback(err);//失败！返回 err
+          return callback(err);//失敗！返回 err
         }
-        callback(null);//返回 err 为 null
+        callback(null);//返回 err 為 null
       });
     });
   });
 };
 
-//一次获取十篇文章
+//一次取得十篇文章
 Post.getTen = function(name, page, callback) {
-  //打开数据库
+  //打開資料庫
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
@@ -77,9 +77,9 @@ Post.getTen = function(name, page, callback) {
       if (name) {
         query.name = name;
       }
-      //使用 count 返回特定查询的文档数 total
+      //使用 count 返回指定搜尋的檔案數 total
       collection.count(query, function (err, total) {
-        //根据 query 对象查询，并跳过前 (page-1)*10 个结果，返回之后的 10 个结果
+        //根據 query 對象查詢，並跳過前 (page-1)*10 個结果，返回之後的 10 個結果
         collection.find(query, {
           skip: (page - 1)*10,
           limit: 10
@@ -90,7 +90,7 @@ Post.getTen = function(name, page, callback) {
           if (err) {
             return callback(err);
           }
-          //解析 markdown 为 html
+          //解析 markdown 為 html
           docs.forEach(function (doc) {
             doc.post = markdown.toHTML(doc.post);
           });  
@@ -101,20 +101,20 @@ Post.getTen = function(name, page, callback) {
   });
 };
 
-//获取一篇文章
+//獲得一篇文章
 Post.getOne = function(name, day, title, callback) {
-  //打开数据库
+  //打開資料庫
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //根据用户名、发表日期及文章名进行查询
+      //根據用戶名、發表日期及文章名進行查询
       collection.findOne({
         "name": name,
         "time.day": day,
@@ -125,7 +125,7 @@ Post.getOne = function(name, day, title, callback) {
           return callback(err);
         }
         if (doc) {
-          //每访问 1 次，pv 值增加 1
+          //每訪問 1 次，pv 值增加 1
           collection.update({
             "name": name,
             "time.day": day,
@@ -138,32 +138,32 @@ Post.getOne = function(name, day, title, callback) {
               return callback(err);
             }
           });
-          //解析 markdown 为 html
+          //解析 markdown 為 html
           doc.post = markdown.toHTML(doc.post);
           doc.comments.forEach(function (comment) {
             comment.content = markdown.toHTML(comment.content);
           });
-          callback(null, doc);//返回查询的一篇文章
+          callback(null, doc);//返回查詢的一篇文章
         }
       });
     });
   });
 };
 
-//返回原始发表的内容（markdown 格式）
+//返回原始發表的内容（markdown 格式）
 Post.edit = function(name, day, title, callback) {
-  //打开数据库
+  //打開資料庫
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //根据用户名、发表日期及文章名进行查询
+      //根據用戶名、發表日期及文章名進行查询
       collection.findOne({
         "name": name,
         "time.day": day,
@@ -173,26 +173,26 @@ Post.edit = function(name, day, title, callback) {
         if (err) {
           return callback(err);
         }
-        callback(null, doc);//返回查询的一篇文章（markdown 格式）
+        callback(null, doc);//返回查詢的一篇文章（markdown 格式）
       });
     });
   });
 };
 
-//更新一篇文章及其相关信息
+//更新一篇文章及其相關信息
 Post.update = function(name, day, title, post, callback) {
-  //打开数据库
+  //打開資料庫
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //更新文章内容
+      //更新文章內容
       collection.update({
         "name": name,
         "time.day": day,
@@ -212,18 +212,18 @@ Post.update = function(name, day, title, post, callback) {
 
 //删除一篇文章
 Post.remove = function(name, day, title, callback) {
-  //打开数据库
+  //打開資料庫
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //查询要删除的文档
+      //查詢要删除的檔案
       collection.findOne({
         "name": name,
         "time.day": day,
@@ -233,13 +233,13 @@ Post.remove = function(name, day, title, callback) {
           mongodb.close();
           return callback(err);
         }
-        //如果有 reprint_from，即该文章是转载来的，先保存下来 reprint_from
+        //如果有 reprint_from，即該文章是轉載來的，先保存下来 reprint_from
         var reprint_from = "";
         if (doc.reprint_info.reprint_from) {
           reprint_from = doc.reprint_info.reprint_from;
         }
         if (reprint_from != "") {
-          //更新原文章所在文档的 reprint_to
+          //更新原文章所在檔案的 reprint_to
           collection.update({
             "name": reprint_from.name,
             "time.day": reprint_from.day,
@@ -259,7 +259,7 @@ Post.remove = function(name, day, title, callback) {
           });
         }
 
-        //删除转载来的文章所在的文档
+        //删除轉載来的文章所在的檔案
         collection.remove({
           "name": name,
           "time.day": day,
@@ -278,20 +278,20 @@ Post.remove = function(name, day, title, callback) {
   });
 };
 
-//返回所有文章存档信息
+//返回所有文章存檔信息
 Post.getArchive = function(callback) {
   //打开数据库
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //返回只包含 name、time、title 属性的文档组成的存档数组
+      //返回只包含 name、time、title 屬性的檔案组成的存檔數組
       collection.find({}, {
         "name": 1,
         "time": 1,
@@ -309,20 +309,20 @@ Post.getArchive = function(callback) {
   });
 };
 
-//返回所有标签
+//返回所有標籤
 Post.getTags = function(callback) {
-  //打开数据库
+  //打開資料庫
   mongodb.open(function (err, db) {
     if (err) {
       return callback(err);
     }
-    //读取 posts 集合
+    //讀取 posts 集合
     db.collection('posts', function (err, collection) {
       if (err) {
         mongodb.close();
         return callback(err);
       }
-      //distinct 用来找出给定键的所有不同值
+      //distinct 用來找出給定鍵的所有不同值
       collection.distinct("tags", function (err, docs) {
         mongodb.close();
         if (err) {
@@ -334,7 +334,7 @@ Post.getTags = function(callback) {
   });
 };
 
-//返回含有特定标签的所有文章
+//返回含有特定標籤的所有文章
 Post.getTag = function(tag, callback) {
   mongodb.open(function (err, db) {
     if (err) {
@@ -345,8 +345,8 @@ Post.getTag = function(tag, callback) {
         mongodb.close();
         return callback(err);
       }
-      //查询所有 tags 数组内包含 tag 的文档
-      //并返回只含有 name、time、title 组成的数组
+      //查詢所有 tags 數組内包含 tag 的檔案
+      //並返回只含有 name、time、title 組成的數組
       collection.find({
         "tags": tag
       }, {
@@ -366,7 +366,7 @@ Post.getTag = function(tag, callback) {
   });
 };
 
-//返回通过标题关键字查询的所有文章信息
+//返回通過標題關鍵字查詢的所有文章信息
 Post.search = function(keyword, callback) {
   mongodb.open(function (err, db) {
     if (err) {
@@ -397,7 +397,7 @@ Post.search = function(keyword, callback) {
   });
 };
 
-//转载一篇文章
+//轉載一篇文章
 Post.reprint = function(reprint_from, reprint_to, callback) {
   mongodb.open(function (err, db) {
     if (err) {
@@ -408,7 +408,7 @@ Post.reprint = function(reprint_from, reprint_to, callback) {
         mongodb.close();
         return callback(err);
       }
-      //找到被转载的文章的原文档
+      //找到被轉載的文章的原檔案
       collection.findOne({
         "name": reprint_from.name,
         "time.day": reprint_from.day,
@@ -429,17 +429,17 @@ Post.reprint = function(reprint_from, reprint_to, callback) {
             date.getHours() + ":" + (date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes())
         }
 
-        delete doc._id;//注意要删掉原来的 _id
+        delete doc._id;//注意要删掉原來的 _id
 
         doc.name = reprint_to.name;
         doc.head = reprint_to.head;
         doc.time = time;
-        doc.title = (doc.title.search(/[转载]/) > -1) ? doc.title : "[转载]" + doc.title;
+        doc.title = (doc.title.search(/[轉載]/) > -1) ? doc.title : "[轉載]" + doc.title;
         doc.comments = [];
         doc.reprint_info = {"reprint_from": reprint_from};
         doc.pv = 0;
 
-        //更新被转载的原文档的 reprint_info 内的 reprint_to
+        //更新被轉載的原檔案的 reprint_info 內的 reprint_to
         collection.update({
           "name": reprint_from.name,
           "time.day": reprint_from.day,
@@ -458,7 +458,7 @@ Post.reprint = function(reprint_from, reprint_to, callback) {
           }
         });
 
-        //将转载生成的副本修改后存入数据库，并返回存储后的文档
+        //将轉載生成的備份修改後存入資料庫，並返回儲存後的檔案
         collection.insert(doc, {
           safe: true
         }, function (err, post) {

@@ -43,11 +43,12 @@ app.use(session({
 //    port: settings.port
 //  })
   store: new MongoStore({ //上面的store修正成下面的，還有增加兩個敘述
-      url: 'mongodb://localhost/blog'
+      url: 'mongodb://'+settings.host+'/'+settings.db
   }),
   resave: true,
   saveUninitialized: true
 }));
+
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -59,6 +60,6 @@ app.use(function (err, req, res, next) {
   next();
 });
 
-app.listen(app.get('port'), function(){
+app.listen(app.get('port'),'0.0.0.0', function(){ // 0.0.0.0 允許外部連接
   console.log('Express server listening on port ' + app.get('port'));
 });

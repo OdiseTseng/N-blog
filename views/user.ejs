@@ -7,7 +7,7 @@
   <p class="info">
     作者：<a href="/u/<%= post.name %>"><%= post.name %></a> | 
     日期：<%= post.time.minute %> | 
-    标签：
+    標籤：
     <% post.tags.forEach(function (tag, index) { %>
       <% if (tag) { %>
         <a class="tag" href="/tags/<%= tag %>"><%= tag %></a>
@@ -19,9 +19,9 @@
   </p>
   <p><%- post.post %></p>
   <p class="info">
-    阅读：<%= post.pv %> | 
-    评论：<%= post.comments.length %> | 
-    转载：
+    閱讀：<%= post.pv %> | 
+    評論：<%= post.comments.length %> | 
+    轉載：
     <% if (post.reprint_info.reprint_to) { %>
       <%= post.reprint_info.reprint_to.length %>
     <% } else { %>
